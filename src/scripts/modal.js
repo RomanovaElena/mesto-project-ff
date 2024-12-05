@@ -30,12 +30,4 @@ function closeModalWithOverlay(evt) {
   }
 }
 
-// Функция закрытия попапа кликом на кнопку крестик
-
-function closeModalByButton(evt) {
-  if(evt.target.classList.contains('popup__close')){
-    closeModal(evt.currentTarget);
-  }
-}
-
-export {openModal, closeModal, closeModalByButton}
+export {openModal, closeModal};
