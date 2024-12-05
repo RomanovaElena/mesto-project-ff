@@ -17,6 +17,7 @@ const editProfileCloseButton = popupEditProfile.querySelector('.popup__close');
 const newCardCloseButton = popupNewCard.querySelector('.popup__close');
 const profileEditButton = document.querySelector('.profile__edit-button');
 const profileAddButton = document.querySelector('.profile__add-button');
+const imageCloseButton = popupTypeImage.querySelector('.popup__close');
 
 // Обработчики событий при открытии и закрытии попапов
 
@@ -39,8 +40,8 @@ newCardCloseButton.addEventListener('click', () => {
   formNewPlace.reset();
 })
 
-popupTypeImage.addEventListener('click', (evt) => {
-  closeModalByButton(evt);
+imageCloseButton.addEventListener('click', () => {
+  closeModal(popupTypeImage);
 });
 
 // Редактирование профиля

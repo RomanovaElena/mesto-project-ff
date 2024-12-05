@@ -15,7 +15,7 @@ function createCard(initialCard, deleteCard, likeCard, openImage) {
   const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);
   const cardImage = cardElement.querySelector('.card__image');
   const cardTitle = cardElement.querySelector('.card__title');
-  
+
   cardImage.src = initialCard.link;
   cardImage.alt = initialCard.name;
   cardTitle.textContent = initialCard.name;
@@ -25,7 +25,6 @@ function createCard(initialCard, deleteCard, likeCard, openImage) {
     .addEventListener('click', function() {
       deleteCard(cardElement)
     });
-
 
   cardElement
     .querySelector('.card__like-button')
@@ -38,7 +37,6 @@ function createCard(initialCard, deleteCard, likeCard, openImage) {
     .addEventListener('click', function(evt) {
       openImage(evt);
     });
-
 
   return cardElement;
 }
@@ -73,9 +71,7 @@ function openImage(evt) {
   popupImage.src = evt.target.src;
   popupImage.alt = evt.target.alt;
   popupCaption.textContent = evt.target.alt;
-
   openModal(popupTypeImage);
 }
-
 
 export {cardsList, createCard, deleteCard, addCard, likeCard, openImage, popupTypeImage}
