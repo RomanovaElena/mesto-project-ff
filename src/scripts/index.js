@@ -1,12 +1,29 @@
 import '../pages/index.css';
 import {initialCards} from './cards.js';
 import {openModal, closeModal} from './modal.js';
-import {cardsList, createCard, deleteCard, addCard, likeCard, openImage, popupTypeImage} from './card.js';
+import {createCard, deleteCard, addCard, likeCard} from './card.js';
+
+// DOM узлы
+
+const cardsList = document.querySelector('.places__list');
+
+// Открыть карточку по клику на картинку 
+
+const popupTypeImage = document.querySelector('.popup_type_image');
+const popupImage = document.querySelector('.popup__image');
+const popupCaption = document.querySelector('.popup__caption');
+
+function openImage(cardData) {
+  popupImage.src = cardData.link;
+  popupImage.alt = cardData.name;
+  popupCaption.textContent = cardData.name;
+  openModal(popupTypeImage);
+}
 
 // Вывести карточки на страницу
 
-initialCards.forEach(function(item) {
-  addCard(cardsList, createCard(item, deleteCard, likeCard, openImage));
+initialCards.forEach(function(cardData) {
+  addCard(cardsList, createCard(cardData, deleteCard, likeCard, openImage));
 });
 
 // DOM узлы
@@ -28,16 +45,15 @@ profileEditButton.addEventListener('click', () => {
 
 profileAddButton.addEventListener('click', () => {
   openModal(popupNewCard);
+  formNewPlace.reset();
 })
 
 editProfileCloseButton.addEventListener('click', () => {
   closeModal(popupEditProfile);
-  formEditProfile.reset();
 })
 
 newCardCloseButton.addEventListener('click', () => {
   closeModal(popupNewCard);
-  formNewPlace.reset();
 })
 
 imageCloseButton.addEventListener('click', () => {
@@ -55,14 +71,14 @@ const jobInput = document.querySelector('.popup__input_type_description');
 
 // Обработчик отправки формы
 
-function handleFormSubmit(evt) {
+function submitEditProfileForm(evt) {
   evt.preventDefault(); 
   profileTitle.textContent = nameInput.value;
   profileDescription.textContent = jobInput.value;
   closeModal(popupEditProfile);
 }
 
-formEditProfile.addEventListener('submit', handleFormSubmit); 
+formEditProfile.addEventListener('submit', submitEditProfileForm); 
 
 // Функция заполнения инпутов сохраненными значениями
 
@@ -80,7 +96,7 @@ const urlInput = document.querySelector('.popup__input_type_url');
 
 // Обработчик отправки формы
 
-function handleNewPlaceFormSubmit(evt) {
+function submitNewPlaceForm(evt) {
   evt.preventDefault(); 
   const newCardValues = {
       name: cardNameInput.value,
@@ -91,4 +107,5 @@ function handleNewPlaceFormSubmit(evt) {
   closeModal(popupNewCard);
 }
 
-formNewPlace.addEventListener('submit', handleNewPlaceFormSubmit); 
+formNewPlace.addEventListener('submit', submitNewPlaceForm); 
+
