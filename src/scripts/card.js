@@ -17,15 +17,16 @@ function createCard(cardData, deleteCard, likeCard, openImage) {
 
   cardElement
     .querySelector(".card__delete-button")
-    .addEventListener("click", deleteCard(cardElement));
+    .addEventListener("click", function() {
+      deleteCard(cardElement);
+    });
 
   cardElement
     .querySelector(".card__like-button")
     .addEventListener("click", likeCard);
 
-  cardImage.addEventListener("click", function () {
-    openImage(cardData);
-  });
+  cardImage
+    .addEventListener("click", () => openImage(cardData));
 
   return cardElement;
 }
@@ -36,7 +37,7 @@ function deleteCard(item) {
   item.remove();
 }
 
-// Вывести карточки на страницу
+// Функция вывода карточки на страницу
 
 function addCard(parent, card) {
   parent.append(card);
@@ -50,4 +51,4 @@ function likeCard(evt) {
   }
 }
 
-export { createCard, deleteCard, addCard, likeCard };
+export {createCard, deleteCard, addCard, likeCard};
