@@ -61,17 +61,33 @@ function deleteCardById(cardId) {
 
 // тут проверить, картинка или нет----------------------------------------------------------
 function updateUserAvatar(url) {
-  return fetch(`${config.baseUrl}/users/me/avatar`, {
-    method: 'PATCH',
-    headers: config.headers,
-    body: JSON.stringify({
-      avatar: url,
-    }),
-  })
-    .then(res => checkResponseState(res));
+  // checkUrl(url)
+  //   .then(() => {
+      return fetch(`${config.baseUrl}/users/me/avatar`, {
+        method: 'PATCH',
+        headers: config.headers,
+        body: JSON.stringify({
+          avatar: url,
+        }),
+      })
+        .then(res => checkResponseState(res));
+    // })
 };
 
-
+// function checkUrl(url) {
+//   return fetch(url, {
+//     method: 'HEAD',
+//   })
+//     .then((res) => {
+//       if (res.ok) {
+//         if (res.headers.get('Content-Type').contain('image')) {
+//           return Promise.resolve();
+//         }
+//         return Promise.reject('Ошибка: введен URL не на изображение');
+//       }
+//       return Promise.reject(`Ошибка: ${res.status}`);
+//     });
+//  };
 
 function addLike(cardId) {
   return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
