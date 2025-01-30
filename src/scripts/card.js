@@ -4,9 +4,14 @@ import {addLike, removeLike, deleteCardById} from './api.js';
 
 const cardTemplate = document.querySelector('#card-template').content;
 
+// Переменные для хранения данных удаляемой карточки
+
+let targetCardId;
+let targetDeleteButton;
+
 // Функция создания карточки
 
-function createCard(cardData, deleteCard, likeCard, openImage, profileId) {
+function createCard(cardData, likeCard, openImage, openConfirmDialog, profileId) {
   const cardElement = cardTemplate
     .querySelector('.places__item')
     .cloneNode(true);
@@ -24,7 +29,11 @@ function createCard(cardData, deleteCard, likeCard, openImage, profileId) {
 
   if (cardData.owner._id === profileId){
     cardDeleteButton
-      .addEventListener('click', () => deleteCard(cardElement, cardId));
+      .addEventListener('click', () => {
+        targetCardId = cardId;
+        targetDeleteButton = cardDeleteButton;
+        openConfirmDialog();
+      });
   } else {
     cardDeleteButton.remove();
   }
@@ -40,9 +49,10 @@ function createCard(cardData, deleteCard, likeCard, openImage, profileId) {
 
 // Функция удаления карточки
 
-function deleteCard(cardElement, cardId) {
+function deleteCard(deleteButton, cardId) {
   deleteCardById(cardId)
     .then((res) => {
+      const cardElement = deleteButton.closest('.places__item');
       cardElement.remove();
     })
     .catch((err) => {
@@ -76,4 +86,4 @@ function likeCard(likeButton, cardId) {
   }
 }
 
-export {createCard, deleteCard, likeCard};
+export {targetCardId, targetDeleteButton, createCard, deleteCard, likeCard};

@@ -1,3 +1,6 @@
+
+// Объект c конфигурацией для интеграции c API
+
 const config = {
   baseUrl: 'https://nomoreparties.co/v1/pwff-cohort-1',
   headers: {
@@ -6,12 +9,16 @@ const config = {
   }
 }
 
+// Функция проверки статуса ответа от сервера
+
 function checkResponseState(res) {
   if (res.ok) {
     return res.json();
   }
   return Promise.reject(`Ошибка: ${res.status}`);
 }
+
+// Функция загрузки информации о пользователе с сервера
 
 function getUserData() {
   return fetch(`${config.baseUrl}/users/me`, {
@@ -20,12 +27,16 @@ function getUserData() {
     .then(res => checkResponseState(res));
 };
 
+// Функция загрузки карточек с сервера
+
 function getInitialCards() {
   return fetch(`${config.baseUrl}/cards`, {
     headers: config.headers,
   })
     .then(res => checkResponseState(res));
 } 
+
+// Функция сохранения отредактированных данных пользователя на сервере
 
 function updateUserData(name, description) {
   return fetch(`${config.baseUrl}/users/me`, {
@@ -39,6 +50,8 @@ function updateUserData(name, description) {
     .then(res => checkResponseState(res));
 };
 
+// Функция добавления новой карточки на сервер
+
 function postCard({name, link}) {
   return fetch(`${config.baseUrl}/cards`, {
     method: 'POST',
@@ -51,6 +64,8 @@ function postCard({name, link}) {
     .then(res => checkResponseState(res));
 };
 
+// Функция удаления карточки с сервера по id
+
 function deleteCardById(cardId) {
   return fetch(`${config.baseUrl}/cards/${cardId}`, {
     method: 'DELETE',
@@ -59,35 +74,37 @@ function deleteCardById(cardId) {
     .then(res => checkResponseState(res));
 };
 
-// тут проверить, картинка или нет----------------------------------------------------------
-function updateUserAvatar(url) {
-  // checkUrl(url)
-  //   .then(() => {
-      return fetch(`${config.baseUrl}/users/me/avatar`, {
-        method: 'PATCH',
-        headers: config.headers,
-        body: JSON.stringify({
-          avatar: url,
-        }),
-      })
-        .then(res => checkResponseState(res));
-    // })
+// Функция проверки, что URL именно на изображение, и он действительный
+
+function checkUrl(url) {
+  return fetch(url, {
+    method: 'HEAD',
+  })
+    .then((res) => {
+      if (res.ok) {
+        if (res.headers.get('Content-Type').includes('image')) {
+          return Promise.resolve();
+        }
+        return Promise.reject(`Ошибка: недействительный URL`);
+      }
+      return Promise.reject(`Ошибка: URL не ссылается на изображение`);
+    });
 };
 
-// function checkUrl(url) {
-//   return fetch(url, {
-//     method: 'HEAD',
-//   })
-//     .then((res) => {
-//       if (res.ok) {
-//         if (res.headers.get('Content-Type').contain('image')) {
-//           return Promise.resolve();
-//         }
-//         return Promise.reject('Ошибка: введен URL не на изображение');
-//       }
-//       return Promise.reject(`Ошибка: ${res.status}`);
-//     });
-//  };
+// Функция обновления аватара пользователя на сервере
+
+function updateUserAvatar(url) {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
+    method: 'PATCH',
+    headers: config.headers,
+    body: JSON.stringify({
+      avatar: url,
+    }),
+  })
+    .then(res => checkResponseState(res));
+};
+
+// Функция постановки лайка
 
 function addLike(cardId) {
   return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
@@ -96,6 +113,8 @@ function addLike(cardId) {
   })
     .then(res => checkResponseState(res));
 };
+
+// Функция снятия лайка
 
 function removeLike(cardId) {
   return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
@@ -106,7 +125,7 @@ function removeLike(cardId) {
 };
 
 export {getUserData, getInitialCards, updateUserData, postCard, 
-  deleteCardById, updateUserAvatar, addLike, removeLike};
+  deleteCardById, checkUrl, updateUserAvatar, addLike, removeLike};
 
 
 

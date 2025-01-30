@@ -1,9 +1,12 @@
 import '../pages/index.css';
-import {initialCards} from './cards.js';
 import {openModal, closeModal} from './modal.js';
-import {createCard, deleteCard, likeCard} from './card.js';
+import {targetCardId, targetDeleteButton, createCard, deleteCard, likeCard} from './card.js';
 import {validationConfig, enableValidation, clearValidation} from './validation.js';
-import {getUserData, getInitialCards, updateUserData, postCard, updateUserAvatar} from './api.js';
+import {getUserData, getInitialCards, checkUrl, updateUserData, postCard, updateUserAvatar} from './api.js';
+
+// Переменная для хранения id текущего пользователя
+
+let profileId;
 
 // DOM узлы
 
@@ -47,6 +50,12 @@ const popupImage = document.querySelector('.popup__image');
 const popupCaption = document.querySelector('.popup__caption');
 const imageCloseButton = popupTypeImage.querySelector('.popup__close');
 
+// DOM узлы попапа подтверждения удаления карточки
+
+const popupConfirm = document.querySelector('.popup_type_confirm');
+const confirmCloseButton = popupConfirm.querySelector('.popup__close');
+const formConfirm = document.querySelector('form[name="confirm"]');
+
 // Функция открытия карточки по клику на картинку 
 
 function openImage(cardData) {
@@ -54,6 +63,12 @@ function openImage(cardData) {
   popupImage.alt = cardData.name;
   popupCaption.textContent = cardData.name;
   openModal(popupTypeImage);
+}
+
+// Функция открытия попапа подтверждения удаления карточки 
+
+function openConfirmDialog() { 
+  openModal(popupConfirm);
 }
 
 // Функция заполнения инпутов сохраненными значениями
@@ -93,7 +108,7 @@ function handleEditProfileFormSubmit(evt) {
 function handleEditAvatarFormSubmit(evt) {
   evt.preventDefault(); 
   renderLoading(editAvatarSubmitButton, true);
-  updateUserAvatar(avatarUrlInput.value)
+  Promise.all([checkUrl(avatarUrlInput.value),   updateUserAvatar(avatarUrlInput.value)])
     .then((res) => {
       profileImage.style.backgroundImage = res.avatar;
       closeModal(popupEditAvatar);
@@ -117,7 +132,7 @@ function handleNewPlaceFormSubmit(evt) {
   }
   postCard(newCardValues)
     .then((card) => {
-      const newCard = createCard(card, deleteCard, likeCard, openImage, profileId);
+      const newCard = createCard(card, likeCard, openImage, openConfirmDialog, profileId);
       cardsList.prepend(newCard);
       closeModal(popupNewCard);
     })
@@ -127,6 +142,14 @@ function handleNewPlaceFormSubmit(evt) {
     .finally(() => {
       renderLoading(newCardSubmitButton, false);
     });
+}
+
+// Обработчик отправки формы подтверждения удаления карточки
+
+function handleConfirmFormSubmit(evt) {
+  evt.preventDefault();
+  deleteCard(targetDeleteButton, targetCardId);
+  closeModal(popupConfirm);
 }
 
 // Обработчики событий при открытии и закрытии попапов
@@ -172,6 +195,11 @@ imageCloseButton
     closeModal(popupTypeImage);
   });
 
+confirmCloseButton 
+.addEventListener('click', () => {
+  closeModal(popupConfirm);
+});
+
 // Обработчики событий при отправке форм
 
 formEditProfile
@@ -183,13 +211,14 @@ formEditAvatar
 formNewPlace.
   addEventListener('submit', handleNewPlaceFormSubmit); 
 
-// Включить валидацию полей форм
+formConfirm 
+  .addEventListener('submit', handleConfirmFormSubmit);
+
+// Добавить валидацию полей всем формам на странице
 
 enableValidation(validationConfig);
 
 // Загрузить информацию о пользователе и данные карточек с сервера
-
-let profileId;
 
 Promise.all([getUserData(), getInitialCards()])
   .then(([profile, cards]) => {
@@ -199,7 +228,7 @@ Promise.all([getUserData(), getInitialCards()])
     profileImage.style.backgroundImage = `url(${profile.avatar})`;
     cards.forEach((cardData) => {
       cardsList.append(
-        createCard(cardData, deleteCard, likeCard, openImage, profileId)
+        createCard(cardData, likeCard, openImage, openConfirmDialog, profileId)
       );
     });
   })

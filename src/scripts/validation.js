@@ -1,3 +1,5 @@
+// Объект с настройками валидации
+
 const validationConfig = {
   formSelector: '.popup__form',
   inputSelector: '.popup__input',
@@ -7,6 +9,8 @@ const validationConfig = {
   errorClass: 'popup__input-error_active'
 };
 
+// Функция отображения ошибки валидации
+
 function showInputError(formElement, inputElement, errorMessage, inputErrorClass, errorClass) {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
   inputElement.classList.add(inputErrorClass);
@@ -14,12 +18,16 @@ function showInputError(formElement, inputElement, errorMessage, inputErrorClass
   errorElement.classList.add(errorClass);
 }
 
+// Функция скрытия ошибки валидации
+
 function hideInputError(formElement, inputElement, inputErrorClass, errorClass) {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
   inputElement.classList.remove(inputErrorClass);
   errorElement.classList.remove(errorClass);
   errorElement.textContent = '';
 }
+
+// Функция валидации введенных данных
 
 function checkInputValidity(formElement, inputElement, inputErrorClass, errorClass) {
   if (inputElement.validity.patternMismatch) {
@@ -44,11 +52,15 @@ function checkInputValidity(formElement, inputElement, inputErrorClass, errorCla
   }
 };
 
+// Функция проверки валидности полей формы
+
 function hasInvalidInput(inputList) {
   return inputList.some((inputElement) => {
     return !inputElement.validity.valid;
   })
 }
+
+// Функция переключения состояния кнопки отправки формы
 
 function toggleButtonState(inputList, buttonElement, inactiveButtonClass) {
   if (hasInvalidInput(inputList)) {
@@ -60,6 +72,8 @@ function toggleButtonState(inputList, buttonElement, inactiveButtonClass) {
     buttonElement.classList.remove(inactiveButtonClass);
   }
 }
+
+// Функция добавления обработчиков всем полям формы
 
 function setEventListeners(
   formElement, 
@@ -81,6 +95,8 @@ function setEventListeners(
   });
 };
 
+// Функция добавления обработчиков всем формам
+
 function enableValidation(validationConfig) {
   const formList = Array.from(document.querySelectorAll(validationConfig.formSelector));
   formList.forEach((formElement) => {
@@ -96,6 +112,8 @@ function enableValidation(validationConfig) {
       validationConfig.errorClass);
   });
 }
+
+// Функция очистки результатов валидации в форме
 
 function clearValidation(formElement, validationConfig) {
   const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
