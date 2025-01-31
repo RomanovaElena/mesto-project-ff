@@ -1,12 +1,17 @@
 import '../pages/index.css';
 import {openModal, closeModal} from './modal.js';
-import {targetCardId, targetDeleteButton, createCard, deleteCard, likeCard} from './card.js';
+import {createCard, deleteCard, likeCard} from './card.js';
 import {validationConfig, enableValidation, clearValidation} from './validation.js';
-import {getUserData, getInitialCards, checkUrl, updateUserData, postCard, updateUserAvatar} from './api.js';
+import {getUserData, getInitialCards, checkUrl, updateUserData, postCard, updateUserAvatar, deleteCardById} from './api.js';
 
 // Переменная для хранения id текущего пользователя
 
 let profileId;
+
+// Переменные для хранения данных удаляемой карточки
+
+let targetCardId;
+let targetDeleteButton;
 
 // DOM узлы
 
@@ -67,7 +72,9 @@ function openImage(cardData) {
 
 // Функция открытия попапа подтверждения удаления карточки 
 
-function openConfirmDialog() { 
+function openConfirmDialog(evt, cardData) { 
+  targetCardId = cardData._id;
+  targetDeleteButton = evt.target;
   openModal(popupConfirm);
 }
 
@@ -148,8 +155,15 @@ function handleNewPlaceFormSubmit(evt) {
 
 function handleConfirmFormSubmit(evt) {
   evt.preventDefault();
-  deleteCard(targetDeleteButton, targetCardId);
-  closeModal(popupConfirm);
+  deleteCardById(targetCardId)
+    .then(() => {
+      const cardElement = targetDeleteButton.closest('.places__item');
+      deleteCard(cardElement);
+      closeModal(popupConfirm);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
 }
 
 // Обработчики событий при открытии и закрытии попапов
@@ -214,7 +228,7 @@ formNewPlace.
 formConfirm 
   .addEventListener('submit', handleConfirmFormSubmit);
 
-// Добавить валидацию полей всем формам на странице
+// Включить валидацию полей всем формам на странице
 
 enableValidation(validationConfig);
 

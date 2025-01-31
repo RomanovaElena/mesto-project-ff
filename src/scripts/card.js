@@ -1,13 +1,8 @@
-import {addLike, removeLike, deleteCardById} from './api.js';
+import {addLike, removeLike} from './api.js';
 
 // Темплейт карточки
 
 const cardTemplate = document.querySelector('#card-template').content;
-
-// Переменные для хранения данных удаляемой карточки
-
-let targetCardId;
-let targetDeleteButton;
 
 // Функция создания карточки
 
@@ -29,10 +24,8 @@ function createCard(cardData, likeCard, openImage, openConfirmDialog, profileId)
 
   if (cardData.owner._id === profileId){
     cardDeleteButton
-      .addEventListener('click', () => {
-        targetCardId = cardId;
-        targetDeleteButton = cardDeleteButton;
-        openConfirmDialog();
+      .addEventListener('click', (evt) => {
+        openConfirmDialog(evt, cardData);
       });
   } else {
     cardDeleteButton.remove();
@@ -49,15 +42,8 @@ function createCard(cardData, likeCard, openImage, openConfirmDialog, profileId)
 
 // Функция удаления карточки
 
-function deleteCard(deleteButton, cardId) {
-  deleteCardById(cardId)
-    .then((res) => {
-      const cardElement = deleteButton.closest('.places__item');
-      cardElement.remove();
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+function deleteCard(cardElement) {
+  cardElement.remove();
 }
 
 // Функция лайка карточки
@@ -86,4 +72,4 @@ function likeCard(likeButton, cardId) {
   }
 }
 
-export {targetCardId, targetDeleteButton, createCard, deleteCard, likeCard};
+export {createCard, deleteCard, likeCard};
